@@ -1,0 +1,1055 @@
+@startuml
+
+title Factory Pattern
+
+interface Guitar {
+    +play() : void
+}
+
+interface GuitarFactory {
+    +createGuitar() : Guitar
+}
+
+enum GuitarBrand {
+    GIBSON
+    IBANEZ
+    LTD_BY_ESP
+}
+
+class GibsonGuitar {
+    +play() : void
+}
+
+class IbanezGuitar {
+    +play() : void
+}
+
+class LtdByEspGuitar {
+    +play() : void
+}
+
+class GibsonGuitarFactory {
+    +createGuitar() : Guitar
+}
+
+class IbanezGuitarFactory {
+    +createGuitar() : Guitar
+}
+
+class LtdByEspGuitarFactory {
+    +createGuitar() : Guitar
+}
+
+class GuitarFactoryProducer {
+    +getFactory(brand : GuitarBrand) : GuitarFactory
+}
+
+class GuitarPlayApp {
+    +main(args : String[]) : void
+}
+
+Guitar <|.. GibsonGuitar
+Guitar <|.. IbanezGuitar
+Guitar <|.. LtdByEspGuitar
+
+GuitarFactory <|.. GibsonGuitarFactory
+GuitarFactory <|.. IbanezGuitarFactory
+GuitarFactory <|.. LtdByEspGuitarFactory
+
+GibsonGuitarFactory --> GibsonGuitar : creates
+IbanezGuitarFactory --> IbanezGuitar : creates
+LtdByEspGuitarFactory --> LtdByEspGuitar : creates
+
+GuitarFactoryProducer --> GuitarFactory : returns
+GuitarFactoryProducer --> GuitarBrand : uses
+GuitarPlayApp --> GuitarFactoryProducer : requests
+GuitarPlayApp --> Guitar : plays
+
+@enduml
+
+
+@startuml
+
+title Abstract Factory Pattern
+
+interface Seller {
+  +sellProduct()
+}
+
+interface Accountant {
+  +calculateBalance()
+  +paySalaries()
+}
+
+interface Director {
+  +manageStore()
+}
+
+interface StoreTeamFactory {
+  +getSeller() : Seller
+  +getAccountant() : Accountant
+  +getDirector() : Director
+}
+
+class OnlineSeller {
+  +sellProduct()
+}
+
+class OnlineAccountant {
+  +calculateBalance()
+ }
+
+class OnlineDirector {
+  +manageStore()
+}
+
+class RealSeller {
+  +sellProduct()
+}
+
+class RealAccountant {
+  +calculateBalance()
+  +paySalaries()
+}
+
+class RealDirector {
+  +manageStore()
+}
+
+class OnlineStoreTeamFactory {
+  +getSeller() : Seller
+  +getAccountant() : Accountant
+  +getDirector() : Director
+}
+
+class RealStoreTeamFactory {
+  +getSeller() : Seller
+  +getAccountant() : Accountant
+  +getDirector() : Director
+}
+
+class OnlineStore
+class RealStore
+
+Seller <|.. OnlineSeller
+Seller <|.. RealSeller
+
+Accountant <|.. OnlineAccountant
+Accountant <|.. RealAccountant
+
+Director <|.. OnlineDirector
+Director <|.. RealDirector
+
+StoreTeamFactory <|.. OnlineStoreTeamFactory
+StoreTeamFactory <|.. RealStoreTeamFactory
+
+OnlineStoreTeamFactory ..> OnlineSeller : creates
+OnlineStoreTeamFactory ..> OnlineAccountant : creates
+OnlineStoreTeamFactory ..> OnlineDirector : creates
+
+RealStoreTeamFactory ..> RealSeller : creates
+RealStoreTeamFactory ..> RealAccountant : creates
+RealStoreTeamFactory ..> RealDirector : creates
+
+OnlineStore ..> StoreTeamFactory
+OnlineStore ..> Seller
+OnlineStore ..> Accountant
+OnlineStore ..> Director
+
+RealStore ..> StoreTeamFactory
+RealStore ..> Seller
+RealStore ..> Accountant
+RealStore ..> Director
+@enduml
+
+@startuml
+
+title Singleton Pattern
+
+class ConfigManager {
+  - instance : ConfigManager
+  - properties : Properties
+  - ConfigManager()
+  + getInstance() : ConfigManager
+  - loadProperties() : void
+  + get(key : String) : String
+}
+
+class Main {
+  + main(args : String[]) : void
+}
+
+class Properties
+
+ConfigManager --> Properties : uses
+Main --> ConfigManager : calls
+
+@enduml
+
+@startuml
+
+title Builder Pattern
+
+' ===== ABSTRACT BUILDER =====
+abstract class ComputerBuilder {
+    #computer : Computer
+    +createComputer()
+    +buildName()
+    +buildCpu()
+    +buildRam()
+    +buildStorage()
+    +buildGpu()
+    +buildPrice()
+    +getComputer() : Computer
+}
+
+' ===== CONCRETE BUILDERS =====
+class GamingComputerBuilder
+class OfficeComputerBuilder
+class ProgrammingComputerBuilder
+
+ComputerBuilder <|-- GamingComputerBuilder
+ComputerBuilder <|-- OfficeComputerBuilder
+ComputerBuilder <|-- ProgrammingComputerBuilder
+
+' ===== DIRECTOR =====
+class Director {
+    -builder : ComputerBuilder
+    +setBuilder(builder : ComputerBuilder)
+    +buildComputer() : Computer
+}
+
+Director --> ComputerBuilder
+
+' ===== PRODUCT =====
+class Computer {
+    -name : String
+    -cpu : CpuGpuType
+    -ram : int
+    -storage : int
+    -gpu : CpuGpuType
+    -price : int
+
+    +setName(name : String)
+    +setCpu(cpu : CpuGpuType)
+    +setRam(ram : int)
+    +setStorage(storage : int)
+    +setGpu(gpu : CpuGpuType)
+    +setPrice(price : int)
+}
+
+ComputerBuilder --> Computer
+
+' ===== ENUM =====
+enum CpuGpuType {
+    INTEL
+    AMD
+    M1
+    NVIDIA
+    RADEON
+    ARC
+}
+
+Computer --> CpuGpuType
+
+' ===== RUNNER (CLIENT) =====
+class BuildComputerRunner {
+    +main(args : String[])
+}
+
+BuildComputerRunner --> Director
+BuildComputerRunner --> GamingComputerBuilder
+BuildComputerRunner --> OfficeComputerBuilder
+BuildComputerRunner --> ProgrammingComputerBuilder
+BuildComputerRunner --> Computer
+
+@enduml
+
+@startuml
+
+title Prototype Pattern
+
+interface Clone {
+    +copy() : Object
+}
+
+class Cats {
+    -name : String
+    -age : int
+    -color : String
+    +Cats(name : String, age : int, color : String)
+    +Cats(cats : Cats)
+    +copy() : Object
+    +toString() : String
+}
+
+class CatFactory {
+    +cloneCat(cats : Cats) : Cats
+}
+
+class VersionCatRunner {
+    +main(args : String[]) : void
+}
+
+Clone <|.. Cats
+CatFactory --> Cats
+VersionCatRunner --> CatFactory
+VersionCatRunner --> Cats
+
+@enduml
+
+
+@startuml
+
+title Adapter Pattern
+
+interface Log {
+    +log() : void
+}
+
+class Logger {
+    +logObject() : void
+}
+
+class Adapter {
+    +log() : void
+}
+
+class RunnerLogger {
+    +main(args : String[]) : void
+}
+
+Adapter --|> Logger
+Adapter ..|> Log
+RunnerLogger --> Log
+
+@enduml
+
+@startuml
+
+title Bridge Pattern
+
+interface PaymentSystem {
+    +processPayment(amount: double)
+}
+
+class CardPayment {
+    +processPayment(amount: double)
+}
+
+class PayPal {
+    +processPayment(amount: double)
+}
+
+class CryptoPayment {
+    +processPayment(amount: double)
+}
+
+PaymentSystem <|.. CardPayment
+PaymentSystem <|.. PayPal
+PaymentSystem <|.. CryptoPayment
+
+
+abstract class Payment {
+    -paymentSystem: PaymentSystem
+    +pay(amount: double)
+}
+
+class OneTimePayment {
+    +pay(amount: double)
+}
+
+class SubscriptionPayment {
+    +pay(amount: double)
+}
+
+Payment <|-- OneTimePayment
+Payment <|-- SubscriptionPayment
+
+Payment --> PaymentSystem
+
+@enduml
+
+
+
+@startuml
+title Composite Pattern – Internet Provider
+
+interface Employee {
+    +createInternetProvider()
+}
+
+class CallOperator {
+    +createInternetProvider()
+}
+
+class InternetInstaller {
+    +createInternetProvider()
+}
+
+class TechnicalSupport {
+    +createInternetProvider()
+}
+
+class Team {
+    -List<Employee> employees
+    +addEmployee(Employee)
+    +removeEmployee(Employee)
+    +createInternetProvider()
+}
+
+class InternetProviderTeam {
+    +main(String[] args)
+}
+
+Employee <|.. CallOperator
+Employee <|.. InternetInstaller
+Employee <|.. TechnicalSupport
+Employee <|.. Team
+
+Team --> Employee : contains *
+
+InternetProviderTeam --> Team
+
+@enduml
+
+
+## UML
+
+```plantuml
+@startuml
+
+title Decorator Pattern
+
+interface Car {
+    +getDescription() : String
+}
+
+class BasicCar {
+    +getDescription() : String
+}
+
+class CarDecorator {
+    #car : Car
+    +CarDecorator(car : Car)
+    +getDescription() : String
+}
+
+class SpeedCar {
+    +SpeedCar(car : Car)
+    +speedCar() : String
+    +getDescription() : String
+}
+
+class SportCar {
+    +SportCar(car : Car)
+    +sportCar() : String
+    +getDescription() : String
+}
+
+class CarsRunner {
+    +main(args : String[]) : void
+}
+
+Car <|.. BasicCar
+Car <|.. CarDecorator
+CarDecorator <|-- SpeedCar
+CarDecorator <|-- SportCar
+CarDecorator o-- Car
+CarsRunner ..> Car
+CarsRunner ..> BasicCar
+CarsRunner ..> SpeedCar
+CarsRunner ..> SportCar
+
+@enduml
+
+
+---
+
+## UML
+
+```plantuml
+@startuml
+title Facade Pattern
+
+class Runner
+class ComputerFacade
+
+class CPU
+class Memory
+class HardDrive
+
+Runner --> ComputerFacade : uses
+
+ComputerFacade --> CPU : coordinates
+ComputerFacade --> Memory : coordinates
+ComputerFacade --> HardDrive : coordinates
+
+CPU : +start()
+Memory : +load()
+HardDrive : +read()
+
+ComputerFacade : -cpu : CPU
+ComputerFacade : -memory : Memory
+ComputerFacade : -hardDrive : HardDrive
+ComputerFacade : +startComputer()
+
+@enduml
+
+
+---
+
+### UML
+
+```plantuml
+@startuml
+title Flyweight Pattern - StartUp Developers
+
+interface StartUpDeveloper {
+    +develop()
+}
+
+class BackendStartUpDeveloper {
+    +develop()
+}
+
+class FrontendStartUpDeveloper {
+    +develop()
+}
+
+class StartUpDeveloperFactory {
+    -developers : Map<String, StartUpDeveloper>
+    +getDeveloperByType(type : String) : StartUpDeveloper
+}
+
+class StartUpDevFactorySupplier {
+    -developers : Map<String, StartUpDeveloper>
+    -creators : Map<String, Supplier<StartUpDeveloper>>
+    +getDeveloperByType(type : String) : StartUpDeveloper
+}
+
+class StartUpRunner {
+    +main(args : String[]) : void
+}
+
+StartUpDeveloper <|.. BackendStartUpDeveloper
+StartUpDeveloper <|.. FrontendStartUpDeveloper
+
+StartUpDeveloperFactory --> StartUpDeveloper : creates / reuses
+StartUpDevFactorySupplier --> StartUpDeveloper : creates / reuses
+
+StartUpRunner --> StartUpDeveloperFactory : uses
+StartUpRunner --> StartUpDevFactorySupplier : uses
+StartUpRunner --> StartUpDeveloper : works with
+
+@enduml
+
+@startuml
+title Proxy Pattern
+
+interface Database {
+    +connect()
+}
+
+class RealDatabase {
+    +connect()
+}
+
+class DatabaseProxy {
+    -realDatabase : RealDatabase
+    -password : String
+    +DatabaseProxy(password : String)
+    +connect()
+    -checkAccess() : boolean
+}
+
+class Runner {
+    +main(args : String[]) : void
+}
+
+Database <|.. RealDatabase
+Database <|.. DatabaseProxy
+
+DatabaseProxy --> RealDatabase : delegates
+Runner --> Database
+
+@enduml
+
+@startuml
+title Chain of Responsibility Pattern
+
+abstract class Handler {
+    # next : Handler
+    + setNext(next : Handler) : void
+    # passToNext(request : String) : void
+    + handle(request : String) : void
+}
+
+class BasicSupport {
+    + handle(request : String) : void
+}
+
+class AdvancedSupport {
+    + handle(request : String) : void
+}
+
+class ExpertSupport {
+    + handle(request : String) : void
+}
+
+class SupportRunner {
+    + main(args : String[]) : void
+}
+
+Handler <|-- BasicSupport
+Handler <|-- AdvancedSupport
+Handler <|-- ExpertSupport
+
+Handler --> Handler : next
+SupportRunner ..> BasicSupport
+SupportRunner ..> AdvancedSupport
+SupportRunner ..> ExpertSupport
+
+@enduml
+
+@startuml
+title Command Pattern
+
+interface Command {
+    +execute() : void
+}
+
+class Light {
+    +turnOn() : void
+    +turnOff() : void
+}
+
+class LightOnCommand {
+    -light : Light
+    +LightOnCommand(light : Light)
+    +execute() : void
+}
+
+class LightOffCommand {
+    -light : Light
+    +LightOffCommand(light : Light)
+    +execute() : void
+}
+
+class RemoteControl {
+    -command : Command
+    +setCommand(command : Command) : void
+    +pressButton() : void
+}
+
+class RunnerCommand {
+    +main(args : String[]) : void
+}
+
+Command <|.. LightOnCommand
+Command <|.. LightOffCommand
+
+LightOnCommand --> Light
+LightOffCommand --> Light
+
+RemoteControl --> Command
+RunnerCommand --> Light
+RunnerCommand --> LightOnCommand
+RunnerCommand --> LightOffCommand
+RunnerCommand --> RemoteControl
+@enduml
+
+@startuml
+title Interpreter Pattern
+
+interface Expression {
+    +interpret() : int
+}
+
+class NumberExpression {
+    -number : int
+    +NumberExpression(number : int)
+    +interpret() : int
+}
+
+class AddExpression {
+    -left : Expression
+    -right : Expression
+    +AddExpression(left : Expression, right : Expression)
+    +interpret() : int
+}
+
+class InterpreterRunner {
+    +main(args : String[]) : void
+}
+
+Expression <|.. NumberExpression
+Expression <|.. AddExpression
+
+AddExpression --> Expression : left
+AddExpression --> Expression : right
+
+InterpreterRunner --> Expression
+InterpreterRunner --> NumberExpression
+InterpreterRunner --> AddExpression
+
+@enduml
+
+
+@startuml
+title Iterator Pattern
+
+interface "Iterator<T>" as Iterator {
+    +hasNext() : boolean
+    +next() : T
+}
+
+interface "Collection<T>" as Collection {
+    +createIterator() : Iterator
+}
+
+class DeveloperTeam {
+    -developers : String[]
+    +DeveloperTeam(developers : String[])
+    +createIterator() : Iterator
+}
+
+class DeveloperIterator {
+    -index : int
+    +hasNext() : boolean
+    +next() : String
+}
+
+class IteratorRunner {
+    +main(args : String[]) : void
+}
+
+Collection <|.. DeveloperTeam
+Iterator <|.. DeveloperIterator
+
+DeveloperTeam *-- DeveloperIterator
+IteratorRunner --> DeveloperTeam
+IteratorRunner --> Iterator
+
+@enduml
+
+@startuml
+title Mediator Pattern
+
+interface AirTrafficControl {
+    +requestTakeOff(airplane: Airplane) : void
+    +requestLanding(airplane: Airplane) : void
+}
+
+class AirportControlTower {
+    -runwayFree: boolean
+    -queue: Queue<Airplane>
+    +requestTakeOff(airplane: Airplane) : void
+    +requestLanding(airplane: Airplane) : void
+}
+
+abstract class Airplane {
+    #control: AirTrafficControl
+    #name: String
+    +Airplane(control: AirTrafficControl, name: String)
+    +getName() : String
+    +requestTakeOff() : void
+    +requestLanding() : void
+}
+
+class PassengerPlane {
+    +PassengerPlane(control: AirTrafficControl, name: String)
+    +requestTakeOff() : void
+    +requestLanding() : void
+}
+
+class AirportRunner {
+    +main(args: String[]) : void
+}
+
+AirTrafficControl <|.. AirportControlTower
+Airplane <|-- PassengerPlane
+Airplane --> AirTrafficControl : uses
+AirportRunner --> AirTrafficControl
+AirportRunner --> PassengerPlane
+
+@enduml
+
+@startuml
+title Memento Pattern
+
+class Editor {
+    - text : String
+    + setText(text : String) : void
+    + getText() : String
+    + save() : Memento
+    + restore(memento : Memento) : void
+}
+
+class Memento {
+    - state : String
+    - createdAt : LocalDateTime
+    + Memento(state : String)
+    + getState() : String
+    + getCreatedAt() : LocalDateTime
+}
+
+class History {
+    - history : Stack<Memento>
+    + save(memento : Memento) : void
+    + undo() : Memento
+    + isEmpty() : boolean
+}
+
+class Runner {
+    + main(args : String[]) : void
+    --
+    Note: saves states with 3-second delay
+    Note: demonstrates undo/rollback
+}
+
+Editor --> Memento : creates
+History o-- Memento : stores
+Runner --> Editor : uses
+Runner --> History : uses
+
+note right of Runner
+Between saved states,
+Runner uses a 3-second pause
+to show different timestamps
+for each Memento.
+end note
+
+@enduml
+
+@startuml
+title Observer Pattern
+
+interface Observer {
+    +update(message: String) : void
+}
+
+interface Subject {
+    +addObserver(observer: Observer) : void
+    +removeObserver(observer: Observer) : void
+    +notifyObservers(message: String) : void
+}
+
+class NewsAgency {
+    -observers: List<Observer>
+    -newsList: List<String>
+    +addObserver(observer: Observer) : void
+    +removeObserver(observer: Observer) : void
+    +addNews(news: String) : void
+    +removeNews(news: String) : void
+    +notifyObservers(message: String) : void
+    +getNewsList() : List<String>
+}
+
+class Subscriber {
+    -name: String
+    +Subscriber(name: String)
+    +update(message: String) : void
+    +toString() : String
+}
+
+class ObserverRunner {
+    +main(args: String[]) : void
+}
+
+Subject <|.. NewsAgency
+Observer <|.. Subscriber
+
+NewsAgency --> Observer : notifies
+ObserverRunner --> NewsAgency
+ObserverRunner --> Subscriber
+
+@enduml
+
+@startuml
+title State Pattern
+
+interface InstallationState {
+    +start(installer : Installer)
+    +nextStep(installer : Installer)
+    +getStateName() : String
+}
+
+class StartInstallationState {
+    +start(installer : Installer)
+    +nextStep(installer : Installer)
+    +getStateName() : String
+}
+
+class InProgressInstallationState {
+    +start(installer : Installer)
+    +nextStep(installer : Installer)
+    +getStateName() : String
+}
+
+class CompletedInstallationState {
+    +start(installer : Installer)
+    +nextStep(installer : Installer)
+    +getStateName() : String
+}
+
+class Installer {
+    -state : InstallationState
+    +setState(state : InstallationState)
+    +startInstallation()
+    +nextStep()
+    +resetInstallation()
+    +getCurrentState() : String
+}
+
+class Runner {
+    +main(args : String[]) : void
+}
+
+InstallationState <|.. StartInstallationState
+InstallationState <|.. InProgressInstallationState
+InstallationState <|.. CompletedInstallationState
+
+Installer --> InstallationState
+Runner --> Installer
+@enduml
+
+@startuml
+title Strategy Pattern
+
+interface PaymentStrategy {
+    +pay(amount : int) : void
+}
+
+class CreditCardPayment {
+    +pay(amount : int) : void
+}
+
+class PayPalPayment {
+    +pay(amount : int) : void
+}
+
+class CryptoPayment {
+    +pay(amount : int) : void
+}
+
+class PaymentContext {
+    -strategy : PaymentStrategy
+    +setStrategy(strategy : PaymentStrategy) : void
+    +executePayment(amount : int) : void
+}
+
+class StrategyRunner {
+    +main(args : String[]) : void
+}
+
+PaymentStrategy <|.. CreditCardPayment
+PaymentStrategy <|.. PayPalPayment
+PaymentStrategy <|.. CryptoPayment
+
+PaymentContext --> PaymentStrategy
+StrategyRunner --> PaymentContext
+StrategyRunner --> CreditCardPayment
+StrategyRunner --> PayPalPayment
+StrategyRunner --> CryptoPayment
+
+@enduml
+
+
+---
+
+# 📊 UML (PlantUML)
+
+```plantuml
+@startuml
+
+title Template Method Pattern
+
+abstract class InstallerTemplate {
+    +installSystem()
+    #prepare()
+    #installFiles()
+    #finish()
+}
+
+class WindowsInstaller {
+    +prepare()
+    +installFiles()
+    +finish()
+}
+
+class LinuxInstaller {
+    +prepare()
+    +installFiles()
+    +finish()
+}
+
+class InstallerRunner {
+    +main(String[] args)
+}
+
+InstallerTemplate <|-- WindowsInstaller
+InstallerTemplate <|-- LinuxInstaller
+
+InstallerRunner --> InstallerTemplate
+
+@enduml
+
+
+---
+
+# UML
+
+```plantuml
+@startuml VisitorPattern
+
+title Visitor Pattern - Installation Steps Example
+
+interface InstallationStep {
+    +accept(visitor: Visitor)
+}
+
+interface Visitor {
+    +visit(step: PrepareStep)
+    +visit(step: InstallFilesStep)
+    +visit(step: FinishStep)
+}
+
+class PrepareStep {
+    +accept(visitor: Visitor)
+}
+
+class InstallFilesStep {
+    +accept(visitor: Visitor)
+}
+
+class FinishStep {
+    +accept(visitor: Visitor)
+}
+
+class LoggingVisitor {
+    +visit(step: PrepareStep)
+    +visit(step: InstallFilesStep)
+    +visit(step: FinishStep)
+}
+
+class Main {
+    +main(args: String[]): void
+}
+
+InstallationStep <|.. PrepareStep
+InstallationStep <|.. InstallFilesStep
+InstallationStep <|.. FinishStep
+
+Visitor <|.. LoggingVisitor
+
+PrepareStep --> Visitor : accept()
+InstallFilesStep --> Visitor : accept()
+FinishStep --> Visitor : accept()
+
+Main --> PrepareStep
+Main --> InstallFilesStep
+Main --> FinishStep
+Main --> LoggingVisitor
+
+@enduml
